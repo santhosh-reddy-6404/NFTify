@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
 <head>
   
@@ -58,13 +58,23 @@ const Route = ReactRouterDOM.Route;
 const { useState } = React
 const { useEffect } = React
 
+var id;
+const tokens = []
+async function Render() {
+  id = parseInt(await contract.methods.currentID().call())+1
+  for (var i=1; i<id; i++) {
+  if(localStorage.getItem('nft'+i)) {
+    tokens.push({
+    'name': localStorage.getItem('nft'+i),
+    'id': i
+    })
+  }
+  }
+} Render();
+
 // App Component...
 
 const App = () => {
-
-const [none, setNone] = useState("0")
-
-sessionStorage.clear();
 
 //Authentication...
 
@@ -125,7 +135,6 @@ const Home = () => {
 const [pic, setPic] = useState("https://ipfs.io/ipfs/QmS4dN3CruRXgQGvsuNinvnRoUnKHX2f2FTb8fmbmu77Hu")
 const [mint, setMint] = useState("fab fa-ethereum")
 const [load, setLoad] = useState("")
-const [nfts, setNfts] = useState(false)
 
 async function picChange(e) {
   setLoad("fad fa-spinner-third fa-spin")
@@ -154,22 +163,11 @@ async function Mint() {
     to: addr,
     data: contract.methods.mintNFT(url).encodeABI()
   }] }).then(async() => {
-    var id = parseInt(await contract.methods.currentID().call())+1
+    id = parseInt(await contract.methods.currentID().call())+1
     localStorage.setItem("nft"+id,metadata.name)
     setNone(Date.now())
   })
   })
-}
-
-const tokens = []
-for (var i=1; i<Date.now(); i++) {
-  if(localStorage.getItem('nft'+i)) {
-    setNfts(true);
-    tokens.push({
-    'name': localStorage.getItem('nft'+i),
-    'id': i
-    })
-  }
 }
 
 return (<div>
@@ -183,11 +181,10 @@ return (<div>
   </div>
   <div className="tokens">
     <b>Your NFTs 🔮</b><p/>
-    {nfts?
-    tokens.map(e  => (<div>
+    {tokens.length>0?tokens.map(e  => (<div>
     •<a href={'https://testnets.opensea.io/assets/'+addr+'/'+e.id}>{e.name+' (#'+e.id+')'}</a><br/>
     </div>))
-    : <span><br/><br/>No NFTs minted!<br/><br/></span>}
+    : <span><br/>No NFTs minted!<br/><br/></span>}
     <p/>
   </div>
 </div>
