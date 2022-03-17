@@ -1,2 +1,3 @@
-# NFTify
-A NFT Minting Dapp
+**NFTify - A NFT Minting Dapp**
+
+Visit: https://nftify.netlify.app
