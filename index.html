@@ -125,6 +125,7 @@ const Home = () => {
 const [pic, setPic] = useState("https://ipfs.io/ipfs/QmS4dN3CruRXgQGvsuNinvnRoUnKHX2f2FTb8fmbmu77Hu")
 const [mint, setMint] = useState("fab fa-ethereum")
 const [load, setLoad] = useState("")
+const [nfts, setNfts] = useState(false)
 
 async function picChange(e) {
   setLoad("fad fa-spinner-third fa-spin")
@@ -163,6 +164,7 @@ async function Mint() {
 const tokens = []
 for (var i=1; i<localStorage.length+1; i++) {
   if(localStorage.getItem('nft'+i)) {
+    setNfts(true);
     tokens.push({
     'name': localStorage.getItem('nft'+i),
     'id': i
@@ -181,7 +183,7 @@ return (<div>
   </div>
   <div className="tokens">
     <b>Your NFTs 🔮</b><p/>
-    {localStorage.getItem("nft1")?
+    {nfts?
     tokens.map(e  => (<div>
     •<a href={'https://testnets.opensea.io/assets/'+addr+'/'+e.id}>{e.name+' (#'+e.id+')'}</a><br/>
     </div>))
