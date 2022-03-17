@@ -1,0 +1,226 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+  
+  <meta charset="UTF-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  
+  <meta name="viewport" content="width=device-width, user-scalable=no"/>
+  
+  <link rel="stylesheet" href="/assets/style.css"></link>
+  
+  <link rel="icon" type="image/png" sizes="192x192" href="/images/logo.png">
+
+  <link rel="manifest" href="manifest.json">
+  
+  <script>
+    if('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js');
+    }
+  </script>
+  
+  <title>NFTify - NFT Minting App</title>
+
+  <script src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
+  
+  <script src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
+ 
+  <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+  
+  <script src='https://unpkg.com/react-router-dom@5.0.0/umd/react-router-dom.min.js'></script>
+  
+  <script src="/assets/fontawesome.js"></script>
+  
+  <script src="https://cdn.jsdelivr.net/npm/web3@1.6.1/dist/web3.min.js"></script>
+
+  <script src="https://unpkg.com/moralis/dist/moralis.js"></script>
+  
+  <script src="https://cdn.jsdelivr.net/npm/abi-decoder@1.2.0/dist/abi-decoder.js"></script>
+  
+  <script src="/assets/script.js"></script>
+  
+</head>
+
+<body>
+  
+<div id="loader"></div>
+  
+<div id="app"></div>
+
+<script type="text/babel">// Start...
+
+const Router = ReactRouterDOM.HashRouter;
+const Switch = ReactRouterDOM.Switch;
+const Link = ReactRouterDOM.Link;
+const Route = ReactRouterDOM.Route;
+
+const { useState } = React
+const { useEffect } = React
+
+// App Component...
+
+const App = () => {
+
+const [none, setNone] = useState("0")
+
+sessionStorage.clear();
+
+//Authentication...
+
+const [log, setLog] = useState(false)
+
+const [balance, setBal] = useState('0')
+var user;
+
+if(Moralis.User.current()){
+user = Moralis.User.current().get('ethAddress');
+useEffect(() => {
+if(user !== null) {
+setLog(true)
+web3.eth.getBalance(user).then((balance) => { setBal((web3.utils.fromWei(balance, 'ether').toString()).substr(0,6));
+  })
+}
+}, [log])
+} else {
+var user="null"
+}
+
+function LogIn() {
+  if(window.ethereum) {
+  Moralis.authenticate({signingMessage:"hello!"}).then(function (user) {
+  window.location.reload()
+  setLog(true)
+  })
+  } else {alert("You don't have metamask installed on your browser! Unable to login...")}
+}
+
+function profLog() {
+  if(confirm("You need to login to mint an NFT. Click 'ok' to login...")===true) {
+    LogIn()
+  }
+}
+
+//Header...
+
+const Header = () => {
+
+return (<div className="header">
+
+<header>
+  <img src="/images/logo.png"></img>
+  <logo>NFTify</logo>
+</header>
+
+<span><a href="https://testnets.opensea.io/collection/nftify-ifdkwvkxni">All your NFT here...!</a>✨</span>
+
+{log?null:<button onClick={LogIn} className="login">Connect Wallet</button>}
+
+</div>)}
+
+//Home...
+
+const Home = () => {
+
+const [pic, setPic] = useState("https://ipfs.io/ipfs/QmS4dN3CruRXgQGvsuNinvnRoUnKHX2f2FTb8fmbmu77Hu")
+const [mint, setMint] = useState("fab fa-ethereum")
+const [load, setLoad] = useState("")
+
+async function picChange(e) {
+  setLoad("fad fa-spinner-third fa-spin")
+  var file = e.target.files[0]
+  const a = new Moralis.File(file.name, file) 
+  await a.saveIPFS().then(() => { 
+    setPic('https://ipfs.io/ipfs/'+a.hash())
+  }).then(() => {
+    setLoad("")
+  })
+}
+
+async function Mint() {
+  setMint("fad fa-spinner-third fa-spin")
+  const metadata = {
+    "name" : document.getElementById('name').value,
+    "description" : document.getElementById('description').value,
+    "image" : pic
+  }
+  const a = new Moralis.File('i.json', { base64: btoa(JSON.stringify(metadata)) })
+  a.saveIPFS().then(() => {
+  var url = "https://ipfs.io/ipfs/"+a.hash()
+  setMint("fab fa-ethereum")
+  window.ethereum.request({method: 'eth_sendTransaction', params: [{
+    from: user,
+    to: addr,
+    data: contract.methods.mintNFT(url).encodeABI()
+  }] }).then(async() => {
+    var id = parseInt(await contract.methods.currentID().call())+1
+    localStorage.setItem("nft"+id,metadata.name)
+    setNone(Date.now())
+  })
+  })
+}
+
+const tokens = []
+for (var i=1; i<localStorage.length+1; i++) {
+  if(localStorage.getItem('nft'+i)) {
+    tokens.push({
+    'name': localStorage.getItem('nft'+i),
+    'id': i
+    })
+  }
+}
+
+return (<div>
+
+{log?<div className="profile">
+<div className="user">
+  <img src="/images/logo.png" width="40px" height="42px"/> 
+  <div className="det">
+    <p><span>Address : </span>{user.substr(0,5)+'....'+user.substr(-5)}</p> 
+    <p><span>Balance : </span>{balance+' '}<i class="fab fa-ethereum"></i></p>
+  </div>
+  <div className="tokens">
+    <b>Your NFTs 🔮</b><p/>
+    {localStorage.getItem("nft1")?
+    tokens.map(e  => (<div>
+    •<a href={'https://testnets.opensea.io/assets/'+addr+'/'+e.id}>{e.name+' (#'+e.id+')'}</a><br/>
+    </div>))
+    : <span><br/><br/>No NFTs minted!<br/><br/></span>}
+    <p/>
+  </div>
+</div>
+</div>:null}
+
+<br/><br/>
+
+<form>
+  <input type="text" id="name" placeholder="Name your NFT"/>
+  <textarea cols="50" rows="5" type="text" id="description" placeholder="Describe your NFT"/>
+  <input onChange={(e)=>picChange(e)} id="image" type="file" accept="image/*"/> <i id="load" className={load} /><br/>
+  <img src={pic} /><br/>
+  <button onClick={log?Mint:profLog} type="button">Mint NFT <i className={mint}/></button><br/>
+</form><br/><br/>
+
+</div>)}
+
+//Routing...
+
+return(<Router><Header/>
+
+<div className="main"><Switch>
+
+<Route exact path="/"><Home/></Route>
+
+</Switch></div>
+
+</Router>)}
+
+//End
+
+ReactDOM.render(<App/>, document.getElementById('app'))
+
+</script>
+
+</body>
+
+</html>
