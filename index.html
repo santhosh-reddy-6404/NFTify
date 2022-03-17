@@ -162,7 +162,7 @@ async function Mint() {
 }
 
 const tokens = []
-for (var i=1; i<localStorage.length+1; i++) {
+for (var i=1; i<Date.now(); i++) {
   if(localStorage.getItem('nft'+i)) {
     setNfts(true);
     tokens.push({
