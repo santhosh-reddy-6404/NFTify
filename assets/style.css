@@ -250,6 +250,20 @@ form button:hover {
   background: #4C1F6B;
 }
 
+/* footer */
+
+footer {
+  margin-top: 50px;
+  width: 100%;
+  text-align: center;
+}
+
+footer p {
+  color: #501D7E;
+  font-family: 'Poppins', san-serif;
+  font-size: 15px;
+}
+
 @media(min-width: 800px) {
   
   form img {
