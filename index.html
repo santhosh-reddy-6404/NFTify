@@ -134,7 +134,11 @@ async function Renderi() {
     })   
   }}
   setNone(Date.now())
-} 
+}
+
+useEffect(() => {
+  Renderi();
+})
 
 async function picChange(e) {
   setLoad("fad fa-spinner-third fa-spin")
@@ -172,8 +176,6 @@ async function Mint() {
   })
   })
 }
-
-Renderi();
 
 return (<div>
 <p id="none">{none}</p>
