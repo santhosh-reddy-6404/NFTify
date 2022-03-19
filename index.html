@@ -118,26 +118,10 @@ return (<div className="header">
 
 const Home = () => {
 
-const [tokens, setTokens] = useState([]);
 const [pic, setPic] = useState("https://ipfs.io/ipfs/QmS4dN3CruRXgQGvsuNinvnRoUnKHX2f2FTb8fmbmu77Hu")
 const [mint, setMint] = useState("fab fa-ethereum")
 const [load, setLoad] = useState("")
 const [none, setNone] = useState(0)
-
-var id;
-async function Render() {
-  var list = []
-  id = parseInt(await contract.methods.currentID().call())+1
-  for (var i=1; i<id; i++) {
-  if(localStorage.getItem('nft'+i)) {
-    list.push({
-    'name': localStorage.getItem('nft'+i),
-    'id': i
-    })
-  }}
-  setTokens(list)
-  setNone(Date.now())
-} Render();
 
 async function picChange(e) {
   setLoad("fad fa-spinner-third fa-spin")
@@ -145,7 +129,6 @@ async function picChange(e) {
   const a = new Moralis.File(file.name, file) 
   await a.saveIPFS().then(() => { 
     setPic('https://ipfs.io/ipfs/'+a.hash())
-    setNone(Date.now())
   }).then(() => {
     setLoad("")
     setNone(Date.now())
@@ -168,9 +151,10 @@ async function Mint() {
     to: addr,
     data: contract.methods.mintNFT(url).encodeABI()
   }] }).then(async() => {
-    id = parseInt(await contract.methods.currentID().call())+1
-    localStorage.setItem("nft"+id,metadata.name)
-    Render();
+    var id = parseInt(await contract.methods.currentID().call())+1
+    if(confirm("Your NFT id id '"+id+"'. Want to see it on Opensea ?")===true) {
+      window.location.href="https://testnets.opensea.io/assets/"+addr+"/"+id
+    }
   })
   })
 }
@@ -183,14 +167,6 @@ return (<div>
   <div className="det">
     <p><span>Address : </span>{user.substr(0,5)+'....'+user.substr(-5)}</p> 
     <p><span>Balance : </span>{balance+' '}<i class="fab fa-ethereum"></i></p>
-  </div>
-  <div className="tokens">
-    <b>Your NFTs 🔮</b><p/>
-    {tokens.length>0?tokens.map(e  => (<div>
-    •<a href={'https://testnets.opensea.io/assets/'+addr+'/'+e.id}>{e.name+' (#'+e.id+')'}</a><br/>
-    </div>))
-    : <span><br/>No NFTs minted!<br/><br/></span>}
-    <p/>
   </div>
 </div>
 </div>:null}
