@@ -121,6 +121,7 @@ const Home = () => {
 const [pic, setPic] = useState("https://ipfs.io/ipfs/QmS4dN3CruRXgQGvsuNinvnRoUnKHX2f2FTb8fmbmu77Hu")
 const [mint, setMint] = useState("fab fa-ethereum")
 const [load, setLoad] = useState("")
+const [none, setNone] = useState(0)
 
 async function picChange(e) {
   setLoad("fad fa-spinner-third fa-spin")
@@ -170,7 +171,7 @@ async function Mint() {
 }
 
 return (<div>
-
+<p id="none">{none}</p>
 {log?<div className="profile">
 <div className="user">
   <img src="/images/logo.png" width="40px" height="42px"/> 
