@@ -146,15 +146,13 @@ async function Mint() {
   a.saveIPFS().then(() => {
   var url = "https://ipfs.io/ipfs/"+a.hash()
   setMint("fab fa-ethereum")
+  window.ethereum.enable()
   window.ethereum.request({method: 'eth_sendTransaction', params: [{
     from: user,
     to: addr,
     data: contract.methods.mintNFT(url).encodeABI()
   }] }).then(async() => {
-    var id = parseInt(await contract.methods.currentID().call())+1
-    if(confirm("Your NFT id id '"+id+"'. Want to see it on Opensea ?")===true) {
-      window.location.href="https://testnets.opensea.io/assets/"+addr+"/"+id
-    }
+    
   })
   })
 }
