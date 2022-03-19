@@ -18,20 +18,6 @@ const addr = "0xfc07497c8Dfd27E18FE67eBc62f21e4B8390B35E"
 
 const contract = new web3.eth.Contract(abi, addr)
 
-var id;
-const tokens = []
-async function Render() {
-  id = parseInt(await contract.methods.currentID().call())+1
-  for (var i=1; i<id; i++) {
-  if(localStorage.getItem('nft'+i)) {
-    tokens.push({
-    'name': localStorage.getItem('nft'+i),
-    'id': i
-    })
-  }
-  }
-} Render();
-
 // Pre-Loader...
 
 document.onreadystatechange = function() {
