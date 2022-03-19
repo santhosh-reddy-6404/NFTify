@@ -123,6 +123,19 @@ const [mint, setMint] = useState("fab fa-ethereum")
 const [load, setLoad] = useState("")
 const [none, setNone] = useState(0)
 
+async function Renderi() {  
+  id = parseInt(await contract.methods.currentID().call())+1
+  tokens = []
+  for (var i=1; i<id; i++) {   
+  if(localStorage.getItem('nft'+i)) {
+    tokens.push({
+      'name': localStorage.getItem('nft'+i),
+      'id': i
+    })   
+  }}
+  setNone(Date.now())
+} 
+
 async function picChange(e) {
   setLoad("fad fa-spinner-third fa-spin")
   var file = e.target.files[0]
@@ -154,21 +167,13 @@ async function Mint() {
   }] }).then(async() => {
     id = parseInt(await contract.methods.currentID().call())+1
     localStorage.setItem("nft"+id,metadata.name)
-     async function Renderi() {  
-       id = parseInt(await contract.methods.currentID().call())+1
-       tokens = []
-       for (var i=1; i<id; i++) {   
-       if(localStorage.getItem('nft'+i)) {
-        tokens.push({
-           'name': localStorage.getItem('nft'+i),
-           'id': i
-        })   
-       }} 
-     } Renderi();
+    Renderi();
     setNone(Date.now())
   })
   })
 }
+
+Renderi();
 
 return (<div>
 <p id="none">{none}</p>
