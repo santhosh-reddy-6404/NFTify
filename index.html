@@ -128,8 +128,10 @@ async function picChange(e) {
   const a = new Moralis.File(file.name, file) 
   await a.saveIPFS().then(() => { 
     setPic('https://ipfs.io/ipfs/'+a.hash())
+    setNone(Date.now())
   }).then(() => {
     setLoad("")
+    setNone(Date.now())
   })
 }
 
@@ -151,6 +153,17 @@ async function Mint() {
   }] }).then(async() => {
     id = parseInt(await contract.methods.currentID().call())+1
     localStorage.setItem("nft"+id,metadata.name)
+     async function Renderi() {  
+       id = parseInt(await contract.methods.currentID().call())+1
+       tokens = []
+       for (var i=1; i<id; i++) {   
+       if(localStorage.getItem('nft'+i)) {
+        tokens.push({
+           'name': localStorage.getItem('nft'+i),
+           'id': i
+        })   
+       }} 
+     } Renderi();
     setNone(Date.now())
   })
   })
