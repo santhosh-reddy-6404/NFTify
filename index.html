@@ -118,27 +118,26 @@ return (<div className="header">
 
 const Home = () => {
 
+const [tokens, setTokens] = useState([]);
 const [pic, setPic] = useState("https://ipfs.io/ipfs/QmS4dN3CruRXgQGvsuNinvnRoUnKHX2f2FTb8fmbmu77Hu")
 const [mint, setMint] = useState("fab fa-ethereum")
 const [load, setLoad] = useState("")
 const [none, setNone] = useState(0)
 
-async function Renderi() {  
+var id;
+async function Render() {
+  var list = []
   id = parseInt(await contract.methods.currentID().call())+1
-  tokens = []
-  for (var i=1; i<id; i++) {   
+  for (var i=1; i<id; i++) {
   if(localStorage.getItem('nft'+i)) {
-    tokens.push({
-      'name': localStorage.getItem('nft'+i),
-      'id': i
-    })   
+    list.push({
+    'name': localStorage.getItem('nft'+i),
+    'id': i
+    })
   }}
+  setTokens(list)
   setNone(Date.now())
-}
-
-useEffect(() => {
-  Renderi();
-})
+} Render();
 
 async function picChange(e) {
   setLoad("fad fa-spinner-third fa-spin")
@@ -171,8 +170,7 @@ async function Mint() {
   }] }).then(async() => {
     id = parseInt(await contract.methods.currentID().call())+1
     localStorage.setItem("nft"+id,metadata.name)
-    Renderi();
-    setNone(Date.now())
+    Render();
   })
   })
 }
