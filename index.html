@@ -177,7 +177,7 @@ async function Mint() {
     to: addr,
     data: contract.methods.mintNFT(url).encodeABI()
   }] }).then(async() => {
-    setNone(Date.now())
+    window.location.reload()
   })
   })
 }
