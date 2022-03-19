@@ -44,8 +44,9 @@ body {
   margin: 0 auto;
 }
 
-hr {
-  background: #531264;
+#none {
+  display: none;
+  font-size: 0;
 }
 
 /* header */
