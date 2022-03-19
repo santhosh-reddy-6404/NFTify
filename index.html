@@ -62,6 +62,33 @@ const { useEffect } = React
 
 const App = () => {
 
+const [tokens, setTokens] = useState([])
+const [none, setNone] = useState(0)
+
+function a(e) {
+  setNone(e)
+}
+
+useEffect(async() => {
+var id = parseInt(await contract.methods.currentID().call())+1
+async function Token(i) {
+var owner = await contract.methods.ownerOf(i).call()
+var url = await contract.methods.tokenURI(i).call()
+if(parseInt(owner) == user) {
+const response = await fetch(url);
+return response.json().then(async (e) => {
+  tokens.push({
+  "name": e.name,
+  "id": i,
+  "owner": owner
+  })
+  a(i)
+})
+}
+}
+for(var i=1; i<id; i++) { Token(i);}
+}, [])
+
 //Authentication...
 
 const [log, setLog] = useState(false)
@@ -121,7 +148,6 @@ const Home = () => {
 const [pic, setPic] = useState("https://ipfs.io/ipfs/QmS4dN3CruRXgQGvsuNinvnRoUnKHX2f2FTb8fmbmu77Hu")
 const [mint, setMint] = useState("fab fa-ethereum")
 const [load, setLoad] = useState("")
-const [none, setNone] = useState(0)
 
 async function picChange(e) {
   setLoad("fad fa-spinner-third fa-spin")
@@ -152,19 +178,30 @@ async function Mint() {
     to: addr,
     data: contract.methods.mintNFT(url).encodeABI()
   }] }).then(async() => {
-    
+    setNone(Date.now())
   })
   })
 }
 
 return (<div>
+
 <p id="none">{none}</p>
+
 {log?<div className="profile">
 <div className="user">
   <img src="/images/logo.png" width="40px" height="42px"/> 
   <div className="det">
     <p><span>Address : </span>{user.substr(0,5)+'....'+user.substr(-5)}</p> 
     <p><span>Balance : </span>{balance+' '}<i class="fab fa-ethereum"></i></p>
+  </div>
+  <div className="tokens">
+    <b>Your NFTs 🔮</b><p/>
+    {tokens.length>0?
+    tokens.sort((a, b) => { return a.id - b.id;}).filter(e=>e.owner!=user).map(e  => (<div>
+    •<a href={'https://testnets.opensea.io/assets/'+addr+'/'+e.id}>{e.name+' (#'+e.id+')'}</a><br/>
+    </div>))
+    : <span><br/><br/>No NFTs minted!<br/><br/></span>}
+    <p/>
   </div>
 </div>
 </div>:null}
