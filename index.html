@@ -58,20 +58,6 @@ const Route = ReactRouterDOM.Route;
 const { useState } = React
 const { useEffect } = React
 
-var id;
-const tokens = []
-async function Render() {
-  id = parseInt(await contract.methods.currentID().call())+1
-  for (var i=1; i<id; i++) {
-  if(localStorage.getItem('nft'+i)) {
-    tokens.push({
-    'name': localStorage.getItem('nft'+i),
-    'id': i
-    })
-  }
-  }
-} Render();
-
 // App Component...
 
 const App = () => {
