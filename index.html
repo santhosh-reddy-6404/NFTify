@@ -156,8 +156,20 @@ async function picChange(e) {
   await a.saveIPFS().then(() => { 
     setPic('https://ipfs.io/ipfs/'+a.hash())
   }).then(() => {
-    setLoad("")
+    
   })
+}
+
+function rendered() {
+  setLoad("");
+}
+
+function startRender() {
+  requestAnimationFrame(rendered);
+}
+
+function loaded() {
+  requestAnimationFrame(startRender);
 }
 
 async function Mint() {
