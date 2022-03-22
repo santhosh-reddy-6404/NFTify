@@ -223,7 +223,7 @@ return (<div>
   <input type="text" id="name" placeholder="Name your NFT"/>
   <textarea cols="50" rows="5" type="text" id="description" placeholder="Describe your NFT"/>
   <input onChange={(e)=>picChange(e)} id="image" type="file" accept="image/*"/> <i id="load" className={load} /><br/>
-  <img src={pic} /><br/>
+  <img src={pic} onLoad={loaded} /><br/>
   <button onClick={log?Mint:profLog} type="button">Mint NFT <i className={mint}/></button><br/>
 </form><br/><br/>
 
